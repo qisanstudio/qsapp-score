@@ -1,0 +1,11 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+
+DEBUG = True
+SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://score:ssss@localhost/score'
+
+#SERVER_NAME = 'www.score.com:18000'
+
+UWSGI_SOCKET = '0.0.0.0:17005'
+UWSGI_MODULE  = 'score:app'
