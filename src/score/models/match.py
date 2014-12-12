@@ -2,15 +2,37 @@
 from __future__ import unicode_literals
 
 from flask import url_for
+from sqlalchemy import sql
+#from guokr.platform.sqlalchemy.types import JSONType
+
 from studio.core.engines import db
-from score.models.team import MatchTeamModel
 
 
 __all__ = [
+    'MatchPlayerModel',
     'MatchModel',
     'RoundModel',
     'BoardModel',
 ]
+
+
+class MatchPlayerModel(db.Model):
+    __tablename__ = 'match_player'
+
+    id = db.Column(db.Integer(), nullable=False, primary_key=True)
+    match_id = db.Column(db.Integer(), db.ForeignKey('match.id'),
+                        nullable=False,
+                        index=True)
+    team_id = db.Column(db.Integer(), db.ForeignKey('team.id'),
+                        nullable=False,
+                        index=True)
+    score = db.Column(db.Integer(), nullable=False)
+    is_home = db.Column(db.Boolean(), nullable=False,
+                        server_default=sql.true())
+#    info = db.Column(JSONType(), nullable=True)
+    date_created = db.Column(db.DateTime(timezone=True),
+                             nullable=False, index=True,
+                             server_default=db.func.current_timestamp())
 
 
 class MatchModel(db.Model):
@@ -29,7 +51,14 @@ class MatchModel(db.Model):
                              nullable=False, index=True,
                              server_default=db.func.current_timestamp())
 
-    teams = db.relationship('TeamModel', secondary=MatchTeamModel.__table__)
+    players = db.relationship(
+        'MatchPlayerModel',
+        primaryjoin='MatchModel.id==MatchPlayerModel.match_id',
+        order_by=MatchPlayerModel.is_home.desc(),
+        foreign_keys='[MatchPlayerModel.match_id]',
+        backref=db.backref(
+            'match', lazy='subquery', innerjoin=True),
+        passive_deletes='all', lazy='dynamic')
 
     @property
     def url(self):

@@ -96,7 +96,9 @@ setup_params = dict(
     package_dir={'': 'src'},
     include_package_data=True,
     zip_safe=False,
-    install_requires=reqs('install.txt'))
+    install_requires=reqs('install.txt'),
+    tests_require=reqs('test.txt'),
+    test_suite="nose.collector")
 
 setup_params.update(setup_ext)
 

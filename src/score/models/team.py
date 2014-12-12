@@ -10,15 +10,6 @@ __all__ = [
 ]
 
 
-class MatchTeamModel(db.Model):
-    __tablename__ = 'match_team'
-
-    match_id = db.Column(db.Integer(), db.ForeignKey('match.id'),
-                         primary_key=True, index=True)
-    team_id = db.Column(db.Integer(),
-                       db.ForeignKey('team.id'), primary_key=True, index=True)
-
-
 class TeamModel(db.Model):
     __tablename__ = 'team'
 

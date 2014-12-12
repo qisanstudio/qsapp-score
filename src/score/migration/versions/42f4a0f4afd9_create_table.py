@@ -12,7 +12,7 @@ down_revision = None
 
 from alembic import op
 import sqlalchemy as sa
-
+#from guokr.platform.sqlalchemy.types import JSONType
 
 def upgrade():
     op.create_table(u'board',
@@ -52,16 +52,25 @@ def upgrade():
                                   nullable=False, index=True,
                                   server_default=sa.func.current_timestamp()))
 
-    op.create_table(u'match_team',
-        sa.Column('match_id', sa.Integer(), sa.ForeignKey('match.id'),
-                              primary_key=True, index=True),
-        sa.Column('team_id', sa.Integer(), sa.ForeignKey('team.id'),
-                              primary_key=True, index=True))
+    op.create_table(u'match_player',
+        sa.Column('id', sa.Integer(), nullable=False, primary_key=True),
+        sa.Column('match_id', sa.Integer(),
+                              sa.ForeignKey('match.id'), nullable=True),
+        sa.Column('team_id', sa.Integer(),
+                             sa.ForeignKey('team.id'), nullable=True),
+        sa.Column('score', sa.Integer(), nullable=False,
+                           server_default='0'),
+        sa.Column('is_home', sa.Boolean(), nullable=False,
+                             server_default=sa.sql.false()),
+#        sa.Column('info', JSONType()),
+        sa.Column('date_created', sa.DateTime(timezone=True),
+                                  nullable=False, index=True,
+                                  server_default=sa.func.current_timestamp()))
 
 
 def downgrade():
-    op.drop_table(u'match_team')
     op.drop_table(u'team')
+    op.drop_table(u'match_player')
     op.drop_table(u'match')
     op.drop_table(u'round')
     op.drop_table(u'board')
