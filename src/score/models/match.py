@@ -26,13 +26,18 @@ class MatchPlayerModel(db.Model):
     team_id = db.Column(db.Integer(), db.ForeignKey('team.id'),
                         nullable=False,
                         index=True)
-    score = db.Column(db.Integer(), nullable=False)
+    score = db.Column(db.Integer(), server_default='0', 
+                                    nullable=False)
     is_home = db.Column(db.Boolean(), nullable=False,
                         server_default=sql.true())
 #    info = db.Column(JSONType(), nullable=True)
     date_created = db.Column(db.DateTime(timezone=True),
                              nullable=False, index=True,
                              server_default=db.func.current_timestamp())
+
+    team = db.relationship(
+        'TeamModel',
+        primaryjoin='MatchPlayerModel.team_id==TeamModel.id')
 
 
 class MatchModel(db.Model):
@@ -44,7 +49,6 @@ class MatchModel(db.Model):
                          index=True)
     place = db.Column(db.Unicode(1024), nullable=False)
     introduction = db.Column(db.UnicodeText(), nullable=False)
-    result = db.Column(db.Unicode(1024), nullable=False)
     date_started = db.Column(db.DateTime(timezone=True),
                              nullable=True, index=True)
     date_created = db.Column(db.DateTime(timezone=True),
